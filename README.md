@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="100" src="https://plugins.jetbrains.com/files/18551/169271/icon/pluginIcon.png"> 
+    <img width="100" src="https://plugins.jetbrains.com/files/18551/169271/icon/pluginIcon.png">
     <img width="100" src="https://www.picng.com/upload/plus/png_plus_52185.png">
     <img width="100" src="https://ui-lib.com/blog/wp-content/uploads/2021/12/nextjs-boilerplate-logo.png">
 
