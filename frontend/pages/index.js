@@ -4,7 +4,7 @@ import Web3Modal from "web3modal";
 
 import { providers, Contract } from "ethers";
 import { useEffect, useRef, useState } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK } from "../config/constants";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK, DEPLOYER_ADDRESS } from "../config/constants";
 
 
 export default function Home() {
