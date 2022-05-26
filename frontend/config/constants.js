@@ -1,5 +1,6 @@
-import { name, address, network, deployer } from "./contractMeta.json";
-const { abi } = require(`../artifacts/contracts/${name}.sol/${name}.json`);
+import ContractMeta from "./contractMeta.json";
+const { abi } = require(`../artifacts/contracts/${ContractMeta.name}.sol/${ContractMeta.name}.json`);
+
 
 const NETWORKS = {
     localhost: {
@@ -25,6 +26,6 @@ const NETWORKS = {
 }
 
 export const CONTRACT_ABI = abi;
-export const CONTRACT_ADDRESS = address;
-export const DEPLOYER_ADDRESS = deployer;
-export const DEPLOYED_NETWORK = NETWORKS[network];
+export const CONTRACT_ADDRESS = ContractMeta.address;
+export const DEPLOYER_ADDRESS = ContractMeta.deployer;
+export const DEPLOYED_NETWORK = NETWORKS[ContractMeta.network];

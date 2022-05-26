@@ -3,21 +3,19 @@ import Head from 'next/head';
 import Web3Modal from "web3modal";
 
 import { providers, Contract } from "ethers";
-import { useEffect, useRef, useState } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK, DEPLOYER_ADDRESS } from "../config/constants";
+import { useEffect, useState } from "react";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK } from "../config/constants";
 
+import Greeter from './greeter';
 
 export default function Home() {
 
   const [web3provider, setWeb3provider] = useState(null);
   const [walletConnected, setWalletConnected] = useState(false);
-
   const [onTransaction, setOnTransaction] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(true);
-  const [greeter, setGreeter] = useState(null);
-  const newGreet = useRef(null);
 
-
+  // Wallet Connect function, calls to connect the wallet, and initalized all web3 components of the react app.
   const connect = async () => {
     const web3mod = getWeb3Modal();
     const provider = await web3mod.connect();
@@ -29,7 +27,6 @@ export default function Home() {
 
   // Web3 Functions.
   const getWeb3Modal = () => {
-    console.log(DEPLOYED_NETWORK);
     const web3mod = new Web3Modal({
       network: DEPLOYED_NETWORK.name,
       cacheProvider: true,
@@ -63,7 +60,7 @@ export default function Home() {
     checkNetwork();
 
     // Set events.
-    web3provider.on('chainChanged', _ => { console.log("chainChanged"); checkNetwork(); });
+    web3provider.on('chainChanged', _ => checkNetwork());
   }
 
   const checkNetwork = async () => {
@@ -87,57 +84,8 @@ export default function Home() {
     if (web3provider) init();
   }, [web3provider]);
 
-  useEffect(() => {
-    // If we are in the current network, request data to contract.
-    if (!wrongNetwork) {
-      greet();
-    }
-  }, [wrongNetwork]);
 
-
-  // Contract functions.
-  const setGreeting = async () => {
-    if (newGreet.current.value) {
-      const contract = getContract();
-      const tx = await contract.setGreeting(newGreet.current.value);
-
-      setOnTransaction(true);
-      await tx.wait();
-      setOnTransaction(false);
-
-      greet();
-    }
-  }
-
-  const greet = async (e) => {
-    const contract = getContract();
-    const greeting = await contract.greet();
-    setGreeter(greeting);
-  }
-
-
-  // Components render.
-  const renderLoadingGif = () => {
-    if (onTransaction)
-      return (
-        <div className={"text-center"} >
-          <img width="50%"
-            src="./loading.gif" alt="Loading..." />
-        </div>
-      );
-  }
-
-  const renderConnectButton = () => {
-    if (!walletConnected) {
-      return (
-        <button className={"btn btn-primary mt-4 mx-auto"} onClick={connect}>
-          Connect Wallet
-        </button>
-      )
-    }
-  }
-
-  const renderWrongNetworkError = () => {
+  const renderWrongNetworkErrorHeader = () => {
     if (walletConnected && wrongNetwork) {
       return (
         <div className={"alert alert-warning text-center"} role="alert">
@@ -147,21 +95,35 @@ export default function Home() {
     }
   }
 
+  const renderConnectButton = () => {
+    if (!walletConnected) {
+      return (
+        <div className={"text-center"}>
+          <button className={"btn btn-primary mt-4 mx-auto"} onClick={connect}>
+            Connect Wallet
+          </button>
+        </div>
+      )
+    }
+  }
+
   const renderBody = () => {
     if (walletConnected && !wrongNetwork) {
       return (
         <div>
-          <h1 className={"text-center mt-2 mb-2"}>{greeter}</h1>
-          <div className={"input-group mb-3"}>
-            <input type="text" ref={newGreet} className={"form-control"} />
-            <div className={"input-group-append"}>
-              <button className={"btn btn-primary"} type="button" onClick={setGreeting}>Set Greeter</button>
-            </div>
-          </div>
+          <Greeter
+            wrongNetwork={wrongNetwork}
+            onTransaction={onTransaction}
+            setOnTransaction={setOnTransaction}
+            getContract={getContract}
+          />
         </div>
       );
     }
   }
+
+
+
 
   // Main return.
   return (
@@ -169,14 +131,11 @@ export default function Home() {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {renderWrongNetworkError()}
+      {renderWrongNetworkErrorHeader()}
       <div className={"container"}>
-        {renderBody()}
         {renderConnectButton()}
-        {renderLoadingGif()}
+        {renderBody()}
       </div>
     </div>
   )
-
-
 }
