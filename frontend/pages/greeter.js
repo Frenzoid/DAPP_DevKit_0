@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { DEPLOYER_ADDRESS } from "../config/constants";
 
-export default function Greeter({ onTransaction, wrongNetwork, getContract, setOnTransaction }) {
+export default function Greeter({ onTransaction, wrongNetwork, getContract, setOnTransaction, getENSorAdress }) {
 
   const [greeter, setGreeter] = useState(null);
+  const [greeterEvent, setGreeterEvent] = useState([]);
   const newGreet = useRef(null);
 
 
@@ -27,14 +28,41 @@ export default function Greeter({ onTransaction, wrongNetwork, getContract, setO
     setGreeter(greeting);
   }
 
+  const setGreetEventListener = async () => {
+    const contract = getContract();
+    contract.on('Greet', async (address, greeting) => {
+      const from = await getENSorAdress(address);
+      const greetEvents = [...greeterEvent, `${from} says: ${greeting}`];
+      setGreeterEvent(greetEvents);
+    });
+  }
 
+  const loadViewData = async () => {
+    greet();
+    setGreetEventListener();
+  }
 
   // Effects.
   useEffect(() => {
     // If we are in the correct network ( network where our contract is deployed ), request data to contract.
-    if (!wrongNetwork) greet();
+    if (!wrongNetwork) loadViewData();
   }, [wrongNetwork]);
 
+
+  const renderGreetEventList = () => {
+    if (greeterEvent.length > 0) {
+      return (
+        <div className={"mt-5"}>
+          <h3>Greeting Events: </h3>
+          <ul>
+            {greeterEvent.map((event, index) => {
+              return <li key={index}>{event}</li>
+            })}
+          </ul>
+        </div>
+      )
+    }
+  }
 
 
   // Components render.
@@ -59,6 +87,7 @@ export default function Greeter({ onTransaction, wrongNetwork, getContract, setO
           </div>
         </div>
         <div>Created by <code><a href="https://frenzoid.dev">{DEPLOYER_ADDRESS} - MrFrenzoid</a></code> </div>
+        {renderGreetEventList()}
       </div>
     );
   }

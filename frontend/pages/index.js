@@ -54,6 +54,13 @@ export default function Home() {
     return contract;
   }
 
+  const getENSorAdress = async (adress) => {
+    const provider = getEthersProvider();
+    const ens = await provider.lookupAddress(adress);
+    return ens || adress;
+  }
+
+
   // Behaviours
   const init = () => {
     // When new provider is connected, check network.
@@ -116,6 +123,7 @@ export default function Home() {
             onTransaction={onTransaction}
             setOnTransaction={setOnTransaction}
             getContract={getContract}
+            getENSorAdress={getENSorAdress}
           />
         </div>
       );
