@@ -10,6 +10,7 @@
     "deploy-rinkeby": "hardhat run ./scripts/deploy.js --network rinkeby",
     "deploy-ropsten": "hardhat run ./scripts/deploy.js --network ropsten",
     "deploy-mumbai": "hardhat run ./scripts/deploy.js --network mumbai",
+    "deploy-goerli": "hardhat run ./scripts/deploy.js --network goerli",
     "test": "hardhat test"
   },
   "keywords": [],

@@ -23,6 +23,11 @@ const NETWORKS = {
         color: "#92D9FA",
         chainId: 80001,
     },
+    goerli: {
+        name: "goerli",
+        color: "#00D0D0",
+        chainId: 420,
+    },
 }
 
 export const CONTRACT_ABI = abi;
