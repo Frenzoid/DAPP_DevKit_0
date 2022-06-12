@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DEPLOYER_ADDRESS } from "../config/constants";
 
-export default function Greeter({ onTransaction, wrongNetwork, getContract, setOnTransaction, getENSorAdress }) {
+export default function Greeter({ onTransaction, wrongNetwork, getContract, setOnTransaction, getENSorAdress, onAccountChanged }) {
 
   const [greeter, setGreeter] = useState(null);
   const [greeterEvents, setGreeterEvents] = useState([]);
@@ -69,7 +69,7 @@ export default function Greeter({ onTransaction, wrongNetwork, getContract, setO
   useEffect(() => {
     // If we are in the correct network ( network where our contract is deployed ), request data to contract.
     if (!wrongNetwork) loadViewData();
-  }, [wrongNetwork]);
+  }, [wrongNetwork, onAccountChanged]);
 
   // Components render.
   const renderBody = () => {
