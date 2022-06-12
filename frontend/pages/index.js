@@ -76,8 +76,7 @@ export default function Home() {
 
     // Set events.
     web3provider.on('chainChanged', _ => checkNetwork());
-    web3provider.on('accountsChanged', _ => setOnAccountChanged(!onAccountChanged));
-
+    web3provider.on('accountsChanged', accs => setOnAccountChanged(accs));
   }
 
   const checkNetwork = async () => {
@@ -132,9 +131,10 @@ export default function Home() {
             wrongNetwork={wrongNetwork}
             onTransaction={onTransaction}
             setOnTransaction={setOnTransaction}
-            getContract={getContract}
-            getENSorAdress={getENSorAdress}
+            contract={getContract()}
+            getSigner={getSigner}
             onAccountChanged={onAccountChanged}
+            getENSorAdress={getENSorAdress}
           />
         </div>
       );
@@ -154,7 +154,6 @@ export default function Home() {
       <div className={"container"}>
         {renderConnectButton()}
         {renderBody()}
-      <footer className={"text-center fixed-bottom"}>Created by <a href="https://frenzoid.dev" className={"text-primary"}>{getENSorAddress}</a> </footer>
       </div>
     </div>
   )

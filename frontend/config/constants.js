@@ -1,7 +1,14 @@
-import ContractMeta from "./contractMeta.json";
-const { abi } = require(`../artifacts/contracts/${ContractMeta.name}.sol/${ContractMeta.name}.json`);
+let contractMeta;
+let artifact;
 
+try {
+    contractMeta = require("./contractMeta.json");
+    artifact = require(`../artifacts/contracts/${contractMeta.name}.sol/${contractMeta.name}.json`);
+} catch (e) {
+    throw new Error("Could not load contractMeta or artifacts, did you forget to deploy your contract first?");
+}
 
+const { abi } = artifact;
 const NETWORKS = {
     localhost: {
         name: "localhost",
@@ -31,6 +38,6 @@ const NETWORKS = {
 }
 
 export const CONTRACT_ABI = abi;
-export const CONTRACT_ADDRESS = ContractMeta.address;
-export const DEPLOYER_ADDRESS = ContractMeta.deployer;
-export const DEPLOYED_NETWORK = NETWORKS[ContractMeta.network];
+export const CONTRACT_ADDRESS = contractMeta.address;
+export const DEPLOYER_ADDRESS = contractMeta.deployer;
+export const DEPLOYED_NETWORK = NETWORKS[contractMeta.network];

@@ -1,35 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 import { DEPLOYER_ADDRESS } from "../config/constants";
 
-export default function Greeter({ onTransaction, wrongNetwork, getContract, setOnTransaction, getENSorAdress, onAccountChanged }) {
+export default function Greeter({ wrongNetwork, onTransaction, setOnTransaction, contract, getSigner, onAccountChanged, getENSorAdress }) {
 
   const [greeter, setGreeter] = useState(null);
   const [greeterEvents, setGreeterEvents] = useState([]);
+
+  const [currentUser, setCurrentUser] = useState(null);
+
   const newGreet = useRef(null);
 
+  // Effects.
+  useEffect(() => {
+    // If we are in the correct network ( network where our contract is deployed ), request data to contract.
+    if (!wrongNetwork) loadViewData();
+  }, [wrongNetwork, onAccountChanged]);
 
-  // Contract functions.
-  const setGreeting = async () => {
-    if (newGreet.current.value) {
-      const contract = getContract();
 
-      const tx = await contract.setGreeting(newGreet.current.value);
-      setOnTransaction(true);
-      await tx.wait();
-      setOnTransaction(false);
-
-      loadViewData();
-    }
+  // Loads data from contract.
+  const loadViewData = async () => {
+    greet();
+    setGreetEventListener();
+    getCurrentUser();
   }
 
   const greet = async (e) => {
-    const contract = getContract();
     const greeting = await contract.greet();
     setGreeter(greeting);
   }
 
   const setGreetEventListener = async () => {
-    const contract = getContract();
 
     // This is a filter ( gets all events, just once )
     const eventFilter = contract.filters.Greet();
@@ -60,29 +60,34 @@ export default function Greeter({ onTransaction, wrongNetwork, getContract, setO
     */
   }
 
-  const loadViewData = async () => {
-    greet();
-    setGreetEventListener();
+  const getCurrentUser = async () => {
+    setCurrentUser(await getENSorAdress(await getSigner().getAddress()));
   }
 
-  // Effects.
-  useEffect(() => {
-    // If we are in the correct network ( network where our contract is deployed ), request data to contract.
-    if (!wrongNetwork) loadViewData();
-  }, [wrongNetwork, onAccountChanged]);
+  // Contract functions.
+  const setGreeting = async () => {
+    if (newGreet.current.value) {
+      const tx = await contract.setGreeting(newGreet.current.value);
+      setOnTransaction(true);
+      await tx.wait();
+      setOnTransaction(false);
+      loadViewData();
+    }
+  }
+
 
   // Components render.
   const renderBody = () => {
     return (
       <div>
-        <h1 className={"text-center mt-2 mb-2"}>{greeter}</h1>
+        <h1 className={"text-center mt-2 mb-2"}>{greeter} </h1>
+        <label>Current user: {currentUser}</label>
         <div className={"input-group mb-3"}>
           <input type="text" ref={newGreet} className={"form-control"} />
           <div className={"input-group-append"}>
             <button className={"btn btn-primary"} type="button" onClick={setGreeting}>Say hello to the world!</button>
           </div>
         </div>
-        <div>Created by <a href="https://frenzoid.dev" className={"text-primary"}>{DEPLOYER_ADDRESS} - MrFrenzoid</a> </div>
       </div>
     );
   }
@@ -121,6 +126,7 @@ export default function Greeter({ onTransaction, wrongNetwork, getContract, setO
       {renderBody()}
       {renderLoadingGif()}
       {renderGreetEventList()}
+      <footer className={"text-center fixed-bottom"}>Created by <a href="https://frenzoid.dev" className={"text-primary"}>{DEPLOYER_ADDRESS}</a> </footer>
     </div>
   );
 }

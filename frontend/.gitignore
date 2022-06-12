@@ -32,5 +32,5 @@ yarn-error.log*
 .vercel
 
 # hardhat
-/artifacts
-contractMeta.json
+*/artifact
+*/contractMeta.json
