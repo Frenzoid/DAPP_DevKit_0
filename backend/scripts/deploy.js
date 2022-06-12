@@ -3,7 +3,8 @@ const { ethers, network } = require("hardhat");
 require("@nomiclabs/hardhat-etherscan");
 
 async function main() {
-  // Name and contstructor arguments of the contract.
+  // Name and constructor arguments of the contract.
+  // THE NAME OF CONTRACT MUST BE THE SAME AS ITS FILE'S NAME.
   const contractName = "Greeter";
   const args = ["Hallo :D"];
 
