@@ -4,7 +4,7 @@ import Web3Modal from "web3modal";
 
 import { providers, Contract } from "ethers";
 import { useEffect, useState } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK } from "../config/constants";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, DEPLOYED_NETWORK, DEPLOYER_ADDRESS } from "../config/constants";
 
 import Greeter from '../components/greeter';
 
@@ -13,6 +13,7 @@ export default function Home() {
   const [web3provider, setWeb3provider] = useState(null);
   const [walletConnected, setWalletConnected] = useState(false);
   const [onTransaction, setOnTransaction] = useState(false);
+  const [onAccountChanged, setOnAccountChanged] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(true);
 
   // Wallet Connect function, calls to connect the wallet, and initalized all web3 components of the react app.
@@ -56,8 +57,15 @@ export default function Home() {
 
   const getENSorAdress = async (adress) => {
     const provider = getEthersProvider();
-    const ens = await provider.lookupAddress(adress);
-    return ens || adress;
+    let ens;
+    try {
+      ens = await provider.lookupAddress(adress);
+    } catch (e) {
+      // network might not support ENS.
+      console.warning(e);
+    } finally {
+      return ens || adress;
+    }
   }
 
 
@@ -68,6 +76,8 @@ export default function Home() {
 
     // Set events.
     web3provider.on('chainChanged', _ => checkNetwork());
+    web3provider.on('accountsChanged', _ => setOnAccountChanged(!onAccountChanged));
+
   }
 
   const checkNetwork = async () => {
@@ -124,6 +134,7 @@ export default function Home() {
             setOnTransaction={setOnTransaction}
             getContract={getContract}
             getENSorAdress={getENSorAdress}
+            onAccountChanged={onAccountChanged}
           />
         </div>
       );
@@ -143,6 +154,7 @@ export default function Home() {
       <div className={"container"}>
         {renderConnectButton()}
         {renderBody()}
+      <footer className={"text-center fixed-bottom"}>Created by <a href="https://frenzoid.dev" className={"text-primary"}>{getENSorAddress}</a> </footer>
       </div>
     </div>
   )
